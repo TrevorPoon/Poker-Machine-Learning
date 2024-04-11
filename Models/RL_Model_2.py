@@ -34,6 +34,32 @@ class RLAgent:
         return action
     
     def learn(self, state, action, reward, next_state, done):
-        # Implement the learning algorithm here
-        # Example: calculate loss, backpropagate, update model weights
-        pass
+        # Convert to tensors
+        state = torch.FloatTensor(state)
+        next_state = torch.FloatTensor(next_state)
+        reward = torch.FloatTensor([reward])
+        action = torch.LongTensor([action])
+
+        # Compute Q values for current state
+        pred = self.model(state)
+
+        # Compute the Q value corresponding to the chosen action
+        q_val = pred.gather(1, action.unsqueeze(1)).squeeze(1)
+
+        # Compute the expected Q values from the next state
+        next_pred = self.model(next_state)
+        next_q_val = next_pred.max(1)[0].detach()
+
+        # Compute the target Q value
+        expected_q_val = reward + (0.99 * next_q_val * (1 - int(done)))  # assuming a discount factor gamma of 0.99
+
+        # Compute the loss as the mean squared error between the target Q value and the predicted Q value
+        loss = F.mse_loss(q_val, expected_q_val)
+
+        # Backpropagation and optimization
+        self.optimizer.zero_grad()  # Clear gradients
+        loss.backward()             # Compute gradients
+        self.optimizer.step()       # Update weights
+
+        # Return the loss value to track performance if needed
+        return loss.item()

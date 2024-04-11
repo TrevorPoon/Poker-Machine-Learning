@@ -4,8 +4,6 @@ from pypokerengine.utils.card_utils import gen_cards
 from pypokerengine.utils.game_state_utils import restore_game_state, attach_hole_card, attach_hole_card_from_deck
 
 from Models.RL_Model_1 import MyModel
-from Utils.poker_game_utils import log, NB_SIMULATION
-from Player.random_player import RandomPlayer
 from Models.RL_Model_2 import RLAgent
 
 class EmulatorPlayer(BasePokerPlayer):
@@ -57,9 +55,20 @@ class EmulatorPlayer(BasePokerPlayer):
         return state_vector
 
     def _map_to_valid_action(self, action_index, valid_actions):
-        # For simplicity, let's assume that action_index corresponds directly to valid_actions
+        # Check if index is out of bounds for the valid_actions list
+        if action_index >= len(valid_actions):
+            action_index = action_index % len(valid_actions)
+        
+        # Retrieve the action information using the valid index
         action_info = valid_actions[action_index]
-        return action_info['action'], action_info['amount']
+        
+        # Depending on the chosen action, you might validate it further to make sure it's allowed
+        # If the action requires a specific amount, make sure to retrieve it
+        amount = action_info['amount']
+        if action_info['action'] == 'raise':
+            amount = amount['min']  # Assuming we always raise the minimum amount
+        
+        return action_info['action'], amount
 
     def _setup_game_state(self, round_state, my_hole_card):
         game_state = restore_game_state(round_state)
