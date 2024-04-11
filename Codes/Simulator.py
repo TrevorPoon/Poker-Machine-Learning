@@ -1,0 +1,38 @@
+from pypokerengine.api.game import setup_config, start_poker
+from pypokerengine.players import BasePokerPlayer
+
+class RandomPlayer(BasePokerPlayer):
+
+    def declare_action(self, valid_actions, hole_card, round_state):
+        # valid_actions format => [CheckAction, CallAction, FoldAction, RaiseAction]
+        call_action_info = valid_actions[1]
+        action, amount = call_action_info["action"], call_action_info["amount"]
+        return action, amount
+
+    def receive_game_start_message(self, game_info):
+        pass
+
+    def receive_round_start_message(self, round_count, hole_card, seats):
+        pass
+
+    def receive_street_start_message(self, street, round_state):
+        pass
+
+    def receive_game_update_message(self, action, round_state):
+        pass
+
+    def receive_round_result_message(self, winners, hand_info, round_state):
+        pass
+
+# game configuration
+config = setup_config(max_round=10, initial_stack=1000, small_blind_amount=10)
+
+# add players
+config.register_player(name='player1', algorithm=RandomPlayer())
+config.register_player(name='player2', algorithm=RandomPlayer())
+
+# start the game
+results = start_poker(config, verbose=1)  # set verbose=1 for more game details
+
+# print the final results
+print(results)
