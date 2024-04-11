@@ -35,12 +35,13 @@ def log(msg):
 
 class EmulatorPlayer(BasePokerPlayer):
 
-    def set_opponents_model(self, model_player):
-        self.opponents_model = model_player
-
-    # setup Emulator with passed game information
-    def receive_game_start_message(self, game_info):
+    def __init__(self):
+        super().__init__()
         self.my_model = MyModel()
+        self.opponents_model = RandomPlayer()
+    # setup Emulator with passed game information
+    
+    def receive_game_start_message(self, game_info):
         nb_player = game_info['player_num']
         max_round = game_info['rule']['max_round']
         sb_amount = game_info['rule']['small_blind_amount']
@@ -50,7 +51,7 @@ class EmulatorPlayer(BasePokerPlayer):
         self.emulator.set_game_rule(nb_player, max_round, sb_amount, ante_amount)
         for player_info in game_info['seats']:
             uuid = player_info['uuid']
-            player_model = self.my_model if uuid == self.uuid else self.set_opponents_model
+            player_model = self.my_model if uuid == self.uuid else self.opponents_model
             self.emulator.register_player(uuid, player_model)
 
     def declare_action(self, valid_actions, hole_card, round_state):

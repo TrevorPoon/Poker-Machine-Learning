@@ -1,4 +1,3 @@
-from pypokerengine.api.game import setup_config, start_poker
 from pypokerengine.players import BasePokerPlayer
 
 class RandomPlayer(BasePokerPlayer):
@@ -23,16 +22,3 @@ class RandomPlayer(BasePokerPlayer):
 
     def receive_round_result_message(self, winners, hand_info, round_state):
         pass
-
-# game configuration
-config = setup_config(max_round=10, initial_stack=1000, small_blind_amount=10)
-
-# add players
-config.register_player(name='player1', algorithm=RandomPlayer())
-config.register_player(name='player2', algorithm=RandomPlayer())
-
-# start the game
-results = start_poker(config, verbose=1)  # set verbose=1 for more game details
-
-# print the final results
-print(results)
