@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 
 class PokerNN(nn.Module):
     def __init__(self, state_size, action_size):
