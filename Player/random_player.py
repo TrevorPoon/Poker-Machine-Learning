@@ -6,6 +6,7 @@ class RandomPlayer(BasePokerPlayer):
         # valid_actions format => [CheckAction, CallAction, FoldAction, RaiseAction]
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
+        print(valid_actions)
         return action, amount
 
     def receive_game_start_message(self, game_info):

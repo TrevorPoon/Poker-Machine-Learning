@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from collections import deque
+import random
 
 class PokerNN(nn.Module):
     def __init__(self, state_size, action_size):
@@ -18,49 +20,62 @@ class PokerNN(nn.Module):
 
 class RLAgent:
     def __init__(self, state_size, action_size):
+        self.state_size = state_size
+        self.action_size = action_size
         self.model = PokerNN(state_size, action_size)
+        self.target_model = PokerNN(state_size, action_size)
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
-        # ... Initialize other components of your learning algorithm
-    
+        self.memory = deque(maxlen=10000)  # Experience replay memory
+        self.epsilon = 1.0                  # Exploration factor
+        self.epsilon_decay = 0.995          # Decay rate of epsilon
+        self.epsilon_min = 0.01             # Minimum epsilon
+        self.gamma = 0.99                   # Discount factor
+        self.tau = 0.001                    # Target network soft update
+        self.update_target_counter = 0      # Counter to update target network
+
     def select_action(self, state):
-        # Convert state to torch tensor
-        state_tensor = torch.FloatTensor(state)
-        
-        # Get action probabilities from model
-        action_probs = self.model(state_tensor)
-        
-        # Select an action based on probabilities
-        action = torch.argmax(action_probs).item()
-        
-        return action
+        state_tensor = torch.FloatTensor(state).unsqueeze(0)
+        if random.random() > self.epsilon:
+            with torch.no_grad():
+                action_values = self.model(state_tensor)
+            return torch.argmax(action_values).item()
+        else:
+            return random.choice(range(self.action_size))
     
+    def replay(self, batch_size):
+        if len(self.memory) < batch_size:
+            return
+        minibatch = random.sample(self.memory, batch_size)
+        for state, action, reward, next_state, done in minibatch:
+            self.learn(state, action, reward, next_state, done)
+
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon_decay
+
     def learn(self, state, action, reward, next_state, done):
-        # Convert to tensors
-        state = torch.FloatTensor(state)
-        next_state = torch.FloatTensor(next_state)
-        reward = torch.FloatTensor([reward])
-        action = torch.LongTensor([action])
+        state = torch.FloatTensor(state).unsqueeze(0)
+        next_state = torch.FloatTensor(next_state).unsqueeze(0)
+        action = torch.LongTensor([action]).unsqueeze(0)
+        reward = torch.FloatTensor([reward]).unsqueeze(0)
+        done = torch.FloatTensor([done]).unsqueeze(0)
 
-        # Compute Q values for current state
-        pred = self.model(state)
+        current_q = self.model(state).gather(1, action)
+        max_next_q = self.target_model(next_state).detach().max(1)[0].unsqueeze(1)
+        expected_q = reward + (self.gamma * max_next_q * (1 - done))
 
-        # Compute the Q value corresponding to the chosen action
-        q_val = pred.gather(1, action.unsqueeze(1)).squeeze(1)
+        loss = F.mse_loss(current_q, expected_q)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
 
-        # Compute the expected Q values from the next state
-        next_pred = self.model(next_state)
-        next_q_val = next_pred.max(1)[0].detach()
+        # Update the target network
+        self.update_target_counter += 1
+        if self.update_target_counter % 5 == 0:
+            self.soft_update(self.model, self.target_model)
 
-        # Compute the target Q value
-        expected_q_val = reward + (0.99 * next_q_val * (1 - int(done)))  # assuming a discount factor gamma of 0.99
+    def soft_update(self, local_model, target_model):
+        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
+            target_param.data.copy_(self.tau*local_param.data + (1.0-self.tau)*target_param.data)
 
-        # Compute the loss as the mean squared error between the target Q value and the predicted Q value
-        loss = F.mse_loss(q_val, expected_q_val)
-
-        # Backpropagation and optimization
-        self.optimizer.zero_grad()  # Clear gradients
-        loss.backward()             # Compute gradients
-        self.optimizer.step()       # Update weights
-
-        # Return the loss value to track performance if needed
-        return loss.item()
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append((state, action, reward, next_state, done))

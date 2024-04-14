@@ -3,18 +3,17 @@ from pypokerengine.api.emulator import Emulator
 from pypokerengine.utils.card_utils import gen_cards
 from pypokerengine.utils.game_state_utils import restore_game_state, attach_hole_card, attach_hole_card_from_deck
 
-from Models.RL_Model_Trial import RLAgent
+from Models.RL_Model_2 import RLAgent
 
 class EmulatorPlayer(BasePokerPlayer):
 
     def __init__(self):
         super().__init__()
-        state_size = 10  # Represents number of features in game state representation
+        state_size = 20  # Represents number of features in game state representation
         action_size = 4  # Represents number of possible actions
 
         # Initialize the RL Agent
-        # self.rl_agent = RLAgent(state_size, action_size)
-        self.rl_agent = RLAgent()
+        self.rl_agent = RLAgent(state_size, action_size)
     # setup Emulator with passed game information
     
     def receive_game_start_message(self, game_info):
@@ -23,11 +22,10 @@ class EmulatorPlayer(BasePokerPlayer):
     def declare_action(self, valid_actions, hole_card, round_state):
         state_representation = self._extract_features(valid_actions, round_state, hole_card)
         # Use the RL agent to select the best action
-        action_index = self.rl_agent.select_action(valid_actions, state_representation)
+        action_index = self.rl_agent.select_action(state_representation)
         # Map the action_index to a valid action
-        # action, amount = self._map_to_valid_action(action_index, valid_actions)
+        action, amount = self._map_to_valid_action(action_index, valid_actions)
 
-        action, amount = self.rl_agent.select_action(valid_actions, state_representation)
         return action, amount
     
     def _extract_features(self, valid_actions, round_state, hole_card):
@@ -83,10 +81,6 @@ class EmulatorPlayer(BasePokerPlayer):
             position
         ] + hole_card_ranks + hole_card_suits + community_card_ranks + community_card_suits
 
-        print(state_vector)
-        print(hole_card)
-        print(round_state)
-
         return state_vector 
 
     def _encode_rank(self, rank):
@@ -136,3 +130,5 @@ class EmulatorPlayer(BasePokerPlayer):
 
     def receive_round_result_message(self, winners, hand_info, round_state):
         pass
+
+
