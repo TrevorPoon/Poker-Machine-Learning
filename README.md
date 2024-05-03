@@ -28,6 +28,58 @@ The machine learning models are the core of this project. They have been trained
 
 Refer to `game_setup.py` for basic configurations to set up the initial game parameters.
 
+# Basic Pre-Flop Poker Strategy Guide
+
+Welcome to our Basic Pre-Flop Poker Strategy Guide! This guide is designed to help you make more informed decisions during the crucial pre-flop phase of poker games. Understanding and implementing a solid pre-flop strategy is essential for laying the groundwork for successful play in the subsequent rounds.
+
+## Understanding Pre-Flop
+
+Pre-flop refers to the stage in a round of poker that occurs after each player has been dealt their hole cards (the two private cards dealt to each player) but before the flop (the first three community cards) is revealed. Decisions made during this stage can significantly influence the outcome of the hand.
+
+## Objectives
+
+1. **Hand Selection**: Learn how to recognize strong starting hands.
+2. **Position Awareness**: Understand how your position at the table should influence your actions.
+3. **Bet Sizing**: Identify appropriate bet sizes to accomplish your goals.
+4. **Player Adaptation**: Adjust your strategy based on the tendencies of your opponents.
+
+## Hand Selection Chart
+
+The following chart provides a simplified guide to which hands you should consider playing based on your position. Note that `X` denotes a card of any rank.
+
+| Position      | Hands to Play                                            |
+|---------------|----------------------------------------------------------|
+| Early Position (UTG, UTG+1) | AA, KK, QQ, JJ, TT, 99, AKs, AQs, AKo                     |
+| Middle Position         | Add 88, 77, AQo, AJs, KQs to the above                    |
+| Late Position (Hijack, Cutoff, Button) | Add any pair, ATs, ATo, KJs, QJs, JTs, T9s, 98s, 87s to the above |
+
+- `s` denotes suited cards (same suit).
+- `o` denotes offsuit cards (different suits).
+
+## Position Awareness
+
+- **Early Position**: Playing conservatively is key. Stick to the strongest hands.
+- **Middle Position**: You can start to play a bit more loosely but remain cautious.
+- **Late Position**: The most advantageous position. You can play the widest range of hands and take more calculated risks.
+
+## Bet Sizing
+
+- **Opening Raises**: 2.5x to 3x the big blind is standard. Adjust based on table dynamics.
+- **3-Bets**: Typically, 3x the original raise. Consider the original raiser's position and stack size.
+
+## Player Adaptation
+
+- **Tight Players**: Exploit by bluffing more often, especially if they show reluctance to enter pots.
+- **Loose Players**: Value bet your strong hands more frequently. They're likely to call with inferior hands.
+
+## Conclusion
+
+This guide provides a foundation for your pre-flop strategy, but remember, flexibility is key to a successful poker strategy. Adjust your play style based on the game's dynamics and your opponents' tendencies. Good luck, and may your folds be few and your pots be plentiful!
+
+![Preflop Strategy](./images/preflow_strategy.png)
+
+*Note: The included strategy is a starting point and should be adapted based on your experience and the specific context of each game.*
+
 
 ## Contributions
 
