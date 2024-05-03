@@ -76,7 +76,7 @@ The following chart provides a simplified guide to which hands you should consid
 
 This guide provides a foundation for your pre-flop strategy, but remember, flexibility is key to a successful poker strategy. Adjust your play style based on the game's dynamics and your opponents' tendencies. Good luck, and may your folds be few and your pots be plentiful!
 
-![Preflop Strategy](./images/preflow_strategy.png)
+![Preflop Strategy](./images/Preflop_Strategy.png)
 
 *Note: The included strategy is a starting point and should be adapted based on your experience and the specific context of each game.*
 
