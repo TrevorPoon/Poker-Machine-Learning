@@ -1,0 +1,2 @@
+How to make sure that the player 1 is at the first column
+How to treat even distribution
